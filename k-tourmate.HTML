@@ -1,0 +1,2118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#FF6B8A">
+<title>K-Tourmate 🇰🇷</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Gaegu:wght@400;700&family=Do+Hyeon&display=swap" rel="stylesheet">
+<style>
+:root {
+  --coral: #FF6B8A;
+  --coral-light: #FFE8EE;
+  --mint: #3DD6C8;
+  --mint-light: #E0FAF8;
+  --yellow: #FFD93D;
+  --yellow-light: #FFF8DC;
+  --navy: #1C1F3B;
+  --purple: #9B8FFF;
+  --purple-light: #F0EBFF;
+  --peach: #FFB347;
+  --cream: #FFFAF5;
+  --white: #FFFFFF;
+  --gray: #F4F4F6;
+  --gray2: #E8E8EE;
+  --text: #2A2D4A;
+  --text-soft: #888AAA;
+  --shadow-sm: 0 2px 12px rgba(28,31,59,0.08);
+  --shadow: 0 8px 32px rgba(28,31,59,0.12);
+  --shadow-lg: 0 16px 48px rgba(28,31,59,0.18);
+  --radius: 20px;
+  --radius-lg: 28px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Nunito', sans-serif;
+  background: var(--cream);
+  color: var(--text);
+}
+
+/* ===== SPLASH SCREEN ===== */
+#splash {
+  position: fixed; inset: 0;
+  background: linear-gradient(145deg, #FF6B8A 0%, #FF9A8B 40%, #FFB347 100%);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 1000;
+  transition: opacity 0.6s, transform 0.6s;
+}
+
+#splash.hide {
+  opacity: 0;
+  transform: scale(1.05);
+  pointer-events: none;
+}
+
+.splash-mascot {
+  font-size: 5rem;
+  animation: mascotBounce 1s ease-in-out infinite;
+  filter: drop-shadow(0 8px 20px rgba(0,0,0,0.2));
+}
+
+@keyframes mascotBounce {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  50% { transform: translateY(-16px) rotate(5deg); }
+}
+
+.splash-logo {
+  font-family: 'Gaegu', cursive;
+  font-size: 3rem;
+  color: white;
+  font-weight: 700;
+  margin-top: 16px;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+.splash-sub {
+  color: rgba(255,255,255,0.9);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 6px;
+  letter-spacing: 1px;
+}
+
+.splash-dots {
+  display: flex; gap: 8px; margin-top: 40px;
+}
+
+.splash-dots span {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  animation: dotPop 1.2s ease-in-out infinite;
+}
+
+.splash-dots span:nth-child(2) { animation-delay: 0.2s; }
+.splash-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPop {
+  0%,100% { transform: scale(1); background: rgba(255,255,255,0.5); }
+  50% { transform: scale(1.4); background: rgba(255,255,255,1); }
+}
+
+/* ===== APP SHELL ===== */
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===== HEADER ===== */
+.app-header {
+  background: linear-gradient(135deg, var(--coral) 0%, #FF9A8B 100%);
+  padding: 14px 18px 18px;
+  position: relative;
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.app-header::after {
+  content: '';
+  position: absolute;
+  bottom: -18px; left: 0;
+  width: 100%; height: 36px;
+  background: var(--cream);
+  border-radius: 36px 36px 0 0;
+  z-index: 1;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.h-logo {
+  font-family: 'Gaegu', cursive;
+  font-size: 1.6rem;
+  color: white;
+  font-weight: 700;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.h-logo-mascot { font-size: 1.4rem; animation: mascotBounce 2s ease-in-out infinite; }
+
+.header-actions { display: flex; gap: 8px; align-items: center; }
+
+.lang-toggle {
+  background: rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  color: white;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.75rem;
+  padding: 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s;
+}
+
+.lang-toggle:hover { background: rgba(255,255,255,0.3); }
+
+.weather-chip {
+  background: rgba(255,255,255,0.2);
+  border: 1.5px solid rgba(255,255,255,0.4);
+  color: white;
+  font-weight: 800;
+  font-size: 0.8rem;
+  padding: 5px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  backdrop-filter: blur(10px);
+}
+
+/* ===== SCROLL AREA ===== */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 28px 16px 20px;
+  scroll-behavior: smooth;
+}
+
+.scroll-area::-webkit-scrollbar { display: none; }
+
+/* ===== LOCATION CARD ===== */
+.location-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  animation: slideUp 0.4s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.loc-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-soft);
+  margin-bottom: 10px;
+}
+
+.loc-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: var(--gray);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.loc-row:hover, .loc-row:active { border-color: var(--coral); background: var(--coral-light); }
+
+.pulse-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--coral);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.pulse-dot::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid var(--coral);
+  animation: pulseRing 1.5s ease-in-out infinite;
+}
+
+@keyframes pulseRing {
+  0% { transform: scale(0.8); opacity: 1; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+.loc-text { flex: 1; }
+.loc-name { font-weight: 800; font-size: 0.9rem; color: var(--text); }
+.loc-detail { font-size: 0.73rem; color: var(--text-soft); font-weight: 600; margin-top: 1px; }
+
+.loc-icon { font-size: 1.2rem; }
+
+/* ===== SEARCH CARD ===== */
+.search-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  animation: slideUp 0.4s ease 0.1s both;
+}
+
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-soft);
+  margin-bottom: 10px;
+}
+
+.search-row {
+  display: flex;
+  gap: 8px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 11px 16px;
+  border: 2px solid var(--gray2);
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--gray);
+  outline: none;
+  transition: all 0.2s;
+}
+
+.search-input:focus { border-color: var(--coral); background: white; box-shadow: 0 0 0 4px var(--coral-light); }
+.search-input::placeholder { color: var(--text-soft); font-weight: 600; }
+
+.btn {
+  padding: 11px 16px;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+.btn:active { transform: scale(0.97); }
+.btn-coral { background: var(--coral); color: white; }
+.btn-mint { background: var(--mint); color: white; }
+.btn-navy { background: var(--navy); color: white; }
+.btn-ghost { background: var(--gray); color: var(--text); }
+.btn-full { width: 100%; margin-top: 10px; padding: 14px; font-size: 0.95rem; }
+
+/* ===== TRANSPORT GRID ===== */
+.transport-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  animation: slideUp 0.4s ease 0.15s both;
+}
+
+.transport-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+
+.transport-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 4px;
+  border-radius: 14px;
+  border: 2px solid var(--gray2);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--gray);
+}
+
+.transport-btn:hover { border-color: var(--coral); transform: translateY(-2px); }
+
+.transport-btn.active {
+  border-color: var(--coral);
+  background: var(--coral-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(255,107,138,0.25);
+}
+
+.transport-icon { font-size: 1.3rem; }
+.transport-label { font-size: 0.58rem; font-weight: 800; color: var(--text-soft); text-transform: uppercase; }
+.transport-btn.active .transport-label { color: var(--coral); }
+
+/* ===== ROUTE RESULT ===== */
+.route-result {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  display: none;
+}
+
+.route-result.show { display: block; animation: slideUp 0.3s ease; }
+
+.route-summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--coral-light), var(--purple-light));
+  border-radius: 14px;
+  margin-bottom: 14px;
+}
+
+.route-summary-icon { font-size: 2rem; }
+.route-summary-text h3 { font-size: 1rem; font-weight: 900; color: var(--navy); }
+.route-summary-text p { font-size: 0.8rem; color: var(--text-soft); font-weight: 600; margin-top: 2px; }
+
+.route-steps { display: flex; flex-direction: column; gap: 6px; }
+
+.route-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--gray);
+  border-radius: 12px;
+  position: relative;
+}
+
+.step-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: var(--coral);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.step-content { flex: 1; }
+.step-title { font-size: 0.85rem; font-weight: 800; color: var(--text); }
+.step-detail { font-size: 0.75rem; color: var(--text-soft); font-weight: 600; margin-top: 2px; }
+.step-time { font-size: 0.7rem; font-weight: 900; color: var(--coral); white-space: nowrap; }
+
+/* ===== TIME PICKER ===== */
+.time-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  animation: slideUp 0.4s ease 0.2s both;
+}
+
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.time-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 8px;
+  border-radius: 14px;
+  border: 2px solid var(--gray2);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--gray);
+}
+
+.time-btn:hover { border-color: var(--mint); transform: translateY(-2px); }
+
+.time-btn.active {
+  border-color: var(--mint);
+  background: var(--mint-light);
+  box-shadow: 0 4px 16px rgba(61,214,200,0.25);
+  transform: translateY(-2px);
+}
+
+.time-emoji { font-size: 1.2rem; }
+.time-label { font-size: 0.72rem; font-weight: 800; color: var(--text); }
+.time-sublabel { font-size: 0.6rem; font-weight: 700; color: var(--text-soft); }
+.time-btn.active .time-label { color: var(--mint); }
+
+/* ===== PLACES CARD ===== */
+.places-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  display: none;
+}
+
+.places-card.show { display: block; animation: slideUp 0.3s ease; }
+
+.places-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.places-kori-tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--yellow-light);
+  border: 2px solid var(--yellow);
+  border-radius: 12px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #856404;
+}
+
+.place-list { display: flex; flex-direction: column; gap: 8px; }
+
+.place-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 2px solid var(--gray2);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: white;
+}
+
+.place-item:hover { border-color: var(--coral); background: var(--coral-light); transform: translateX(4px); }
+
+.place-emoji {
+  width: 42px; height: 42px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+
+.place-info { flex: 1; min-width: 0; }
+.place-name { font-size: 0.88rem; font-weight: 800; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.place-detail { font-size: 0.73rem; color: var(--text-soft); font-weight: 600; margin-top: 2px; }
+.place-tags { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+.place-tag {
+  font-size: 0.6rem; font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tag-food { background: #FFE8EE; color: #FF6B8A; }
+.tag-culture { background: var(--purple-light); color: var(--purple); }
+.tag-nature { background: var(--mint-light); color: #2BAF9F; }
+.tag-shop { background: var(--yellow-light); color: #D4A017; }
+.tag-night { background: #1C1F3B10; color: var(--navy); }
+
+.place-arrow { color: var(--text-soft); font-size: 1rem; font-weight: 900; flex-shrink: 0; }
+
+/* ===== ROUTE TIMELINE ===== */
+.route-timeline {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  display: none;
+}
+
+.route-timeline.show { display: block; animation: slideUp 0.3s ease; }
+
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  position: relative;
+}
+
+.timeline-item:not(:last-child) .timeline-dot::after {
+  content: '';
+  position: absolute;
+  top: 28px; left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: calc(100% - 10px);
+  background: var(--gray2);
+}
+
+.timeline-dot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+  width: 24px;
+}
+
+.dot {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  border: 3px solid var(--coral);
+  background: white;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.65rem;
+  font-weight: 900;
+  color: var(--coral);
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.timeline-content {
+  flex: 1;
+  padding-bottom: 16px;
+}
+
+.timeline-time { font-size: 0.7rem; font-weight: 800; color: var(--coral); margin-bottom: 3px; }
+.timeline-title { font-size: 0.88rem; font-weight: 800; color: var(--text); }
+.timeline-note { font-size: 0.75rem; color: var(--text-soft); font-weight: 600; margin-top: 3px; }
+
+/* ===== TIPS BANNER ===== */
+.tips-banner {
+  background: linear-gradient(135deg, var(--navy) 0%, #2D325A 100%);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  margin-bottom: 14px;
+  animation: slideUp 0.4s ease 0.25s both;
+  position: relative;
+  overflow: hidden;
+}
+
+.tips-banner::before {
+  content: '🇰🇷';
+  position: absolute;
+  top: -10px; right: -5px;
+  font-size: 4rem;
+  opacity: 0.1;
+}
+
+.tips-banner-title {
+  font-size: 0.85rem;
+  font-weight: 900;
+  color: white;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tip-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.tip-chip {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 4px;
+}
+
+.tip-chip:hover { background: rgba(255,255,255,0.22); }
+
+/* ===== FAVORITES SECTION ===== */
+.fav-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  margin-bottom: 14px;
+  animation: slideUp 0.4s ease 0.3s both;
+}
+
+.fav-empty {
+  text-align: center;
+  padding: 16px;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.fav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--gray);
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+
+.fav-emoji { font-size: 1.4rem; }
+.fav-info { flex: 1; }
+.fav-name { font-size: 0.85rem; font-weight: 800; }
+.fav-detail { font-size: 0.72rem; color: var(--text-soft); font-weight: 600; }
+.fav-remove { font-size: 1rem; cursor: pointer; color: var(--text-soft); padding: 4px; }
+
+/* ===== BOTTOM NAV ===== */
+.bottom-nav {
+  flex-shrink: 0;
+  background: white;
+  border-top: 1px solid var(--gray2);
+  display: flex;
+  padding: 6px 0 env(safe-area-inset-bottom, 6px);
+  z-index: 20;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.06);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 0;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-radius: 12px;
+  margin: 0 3px;
+  position: relative;
+}
+
+.nav-icon { font-size: 1.3rem; transition: transform 0.2s; }
+.nav-label { font-size: 0.6rem; font-weight: 800; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; }
+
+.nav-item.active .nav-label { color: var(--coral); }
+.nav-item.active .nav-icon { transform: scale(1.15); }
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 28px; height: 3px;
+  background: var(--coral);
+  border-radius: 0 0 4px 4px;
+}
+
+/* ===== TABS ===== */
+.tab-pane { display: none; }
+.tab-pane.active { display: block; }
+
+/* ===== MAP PLACEHOLDER ===== */
+.map-container {
+  background: var(--gray);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  height: 220px;
+  margin-bottom: 14px;
+}
+
+#naverMap {
+  width: 100%;
+  height: 100%;
+}
+
+.map-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #E0F2FF 0%, #EDE8FF 100%);
+  gap: 8px;
+}
+
+.map-placeholder span { font-size: 2.5rem; }
+.map-placeholder p { font-size: 0.85rem; font-weight: 700; color: var(--text-soft); }
+
+.map-fab {
+  position: absolute;
+  bottom: 12px; right: 12px;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+
+.map-fab:hover { transform: scale(1.1); }
+
+/* ===== EXPLORE TAB ===== */
+.category-filter {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  scrollbar-width: none;
+}
+
+.category-filter::-webkit-scrollbar { display: none; }
+
+.cat-btn {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 2px solid var(--gray2);
+  background: white;
+  font-family: 'Nunito', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  display: flex; align-items: center; gap: 4px;
+}
+
+.cat-btn.active { background: var(--coral); border-color: var(--coral); color: white; }
+.cat-btn:hover:not(.active) { border-color: var(--coral); color: var(--coral); }
+
+.explore-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.explore-card {
+  background: white;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.explore-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+
+.explore-img {
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+}
+
+.explore-body { padding: 10px; }
+.explore-name { font-size: 0.82rem; font-weight: 800; color: var(--text); margin-bottom: 3px; }
+.explore-meta { font-size: 0.7rem; color: var(--text-soft); font-weight: 600; display: flex; align-items: center; gap: 4px; }
+
+/* ===== TIPS TAB ===== */
+.tip-section { margin-bottom: 14px; }
+
+.tip-card-big {
+  background: white;
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.tip-card-big:hover { border-color: var(--coral); transform: translateX(4px); }
+
+.tip-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.tip-card-icon {
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.tip-card-title { font-size: 0.9rem; font-weight: 800; color: var(--text); }
+.tip-card-body { font-size: 0.78rem; font-weight: 600; color: var(--text-soft); line-height: 1.5; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(28,31,59,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+
+.modal-sheet {
+  background: white;
+  border-radius: 28px 28px 0 0;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: 20px 20px 40px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.modal-overlay.show .modal-sheet { transform: translateY(0); }
+
+.modal-handle {
+  width: 40px; height: 4px;
+  background: var(--gray2);
+  border-radius: 4px;
+  margin: 0 auto 16px;
+}
+
+.modal-title {
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--navy);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-subtitle { font-size: 0.82rem; font-weight: 600; color: var(--text-soft); margin-bottom: 16px; }
+.modal-body { font-size: 0.88rem; font-weight: 600; color: var(--text); line-height: 1.7; }
+
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+.modal-close { position: absolute; top: 20px; right: 20px; font-size: 1.3rem; cursor: pointer; color: var(--text-soft); }
+
+/* ===== KORI MASCOT FLOAT ===== */
+.kori-float {
+  position: fixed;
+  bottom: 80px; right: 16px;
+  z-index: 100;
+  cursor: pointer;
+  animation: koriFloat 3s ease-in-out infinite;
+}
+
+@keyframes koriFloat {
+  0%,100% { transform: translateY(0) rotate(0deg); }
+  33% { transform: translateY(-8px) rotate(-5deg); }
+  66% { transform: translateY(-4px) rotate(3deg); }
+}
+
+.kori-bubble {
+  position: absolute;
+  bottom: 60px; right: 0;
+  background: white;
+  border-radius: 16px 16px 0 16px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  max-width: 180px;
+  white-space: normal;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s;
+  pointer-events: none;
+  text-align: center;
+  border: 2px solid var(--coral-light);
+}
+
+.kori-float:hover .kori-bubble, .kori-bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.kori-emoji { font-size: 2.5rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15)); }
+
+/* ===== BADGE ===== */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge-coral { background: var(--coral-light); color: var(--coral); }
+.badge-mint { background: var(--mint-light); color: #2BAF9F; }
+
+/* ===== DIVIDER ===== */
+.divider { height: 1px; background: var(--gray2); margin: 12px 0; }
+
+/* ===== SECTION HEADER ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.section-link {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--coral);
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* ===== PROFILE TAB ===== */
+.profile-header {
+  background: linear-gradient(135deg, var(--navy) 0%, #2D325A 100%);
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+.profile-header::before {
+  content: '✈️';
+  position: absolute;
+  top: -10px; left: -5px;
+  font-size: 4rem;
+  opacity: 0.08;
+  transform: rotate(-20deg);
+}
+
+.profile-mascot { font-size: 3rem; margin-bottom: 8px; }
+.profile-name { font-size: 1.1rem; font-weight: 900; color: white; }
+.profile-sub { font-size: 0.8rem; color: rgba(255,255,255,0.7); font-weight: 600; margin-top: 2px; }
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.stat-card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 14px 8px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-num { font-size: 1.4rem; font-weight: 900; color: var(--coral); }
+.stat-label { font-size: 0.65rem; font-weight: 800; color: var(--text-soft); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+/* ===== LOADING ===== */
+.loading-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-soft);
+}
+
+.spinner {
+  width: 20px; height: 20px;
+  border: 3px solid var(--gray2);
+  border-top-color: var(--coral);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ===== TOAST ===== */
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%; transform: translateX(-50%) translateY(-80px);
+  background: var(--navy);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 800;
+  z-index: 999;
+  transition: transform 0.3s;
+  white-space: nowrap;
+  box-shadow: var(--shadow);
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ===== UTILITY ===== */
+.hidden { display: none !important; }
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="splash-mascot">🧑‍🎤</div>
+  <div class="splash-logo">K-Tourmate</div>
+  <div class="splash-sub">Your K-Culture Travel BFF ✨</div>
+  <div class="splash-dots">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal-sheet" id="modalSheet">
+    <div class="modal-handle"></div>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- KORI FLOATING MASCOT -->
+<div class="kori-float" id="kori" onclick="koriTalk()">
+  <div class="kori-bubble" id="koriBubble"></div>
+  <div class="kori-emoji">🧑‍🎤</div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- HEADER -->
+  <header class="app-header">
+    <div class="header-top">
+      <div class="h-logo">
+        <span class="h-logo-mascot">🧑‍🎤</span>
+        K-Tourmate
+      </div>
+      <div class="header-actions">
+        <div class="weather-chip" id="weatherChip">🌡️ --°C</div>
+        <button class="lang-toggle" id="langBtn" onclick="toggleLang()">한/EN</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area" id="scrollArea">
+
+    <!-- TAB: HOME -->
+    <div class="tab-pane active" id="tab-home">
+
+      <!-- LOCATION CARD -->
+      <div class="location-card">
+        <div class="loc-label" data-en="📍 Your Location" data-ko="📍 현재 위치">📍 Your Location</div>
+        <div class="loc-row" id="locRow" onclick="getLocation()">
+          <div class="pulse-dot"></div>
+          <div class="loc-text">
+            <div class="loc-name" id="locName">Tap to detect location</div>
+            <div class="loc-detail" id="locDetail">We'll find nearby spots for you 🗺️</div>
+          </div>
+          <div class="loc-icon">→</div>
+        </div>
+      </div>
+
+      <!-- MAP -->
+      <div class="map-container">
+        <div id="naverMap"></div>
+        <div class="map-placeholder" id="mapPlaceholder">
+          <span>🗺️</span>
+          <p data-en="Map loads after location detected" data-ko="위치 감지 후 지도가 표시됩니다">Map loads after location detected</p>
+        </div>
+        <button class="map-fab" onclick="centerMap()" title="Center map">🎯</button>
+      </div>
+
+      <!-- SEARCH DESTINATION -->
+      <div class="search-card">
+        <div class="section-label" data-en="🔍 Where do you want to go?" data-ko="🔍 어디로 가고 싶어요?">🔍 Where do you want to go?</div>
+        <div class="search-row">
+          <input class="search-input" id="destInput" type="text" placeholder="Search destination... e.g. Gyeongbokgung" data-placeholder-ko="목적지 검색... 예) 경복궁">
+          <button class="btn btn-coral" onclick="searchDestination()">Go! 🚀</button>
+        </div>
+        <div id="searchSuggestions" style="margin-top:8px;display:none;"></div>
+      </div>
+
+      <!-- TRANSPORT -->
+      <div class="transport-card">
+        <div class="section-label" data-en="🚌 How do you want to travel?" data-ko="🚌 어떻게 이동할까요?">🚌 How do you want to travel?</div>
+        <div class="transport-grid">
+          <div class="transport-btn active" onclick="selectTransport(this,'subway')" data-mode="subway">
+            <span class="transport-icon">🚇</span>
+            <span class="transport-label">Subway</span>
+          </div>
+          <div class="transport-btn" onclick="selectTransport(this,'bus')" data-mode="bus">
+            <span class="transport-icon">🚌</span>
+            <span class="transport-label">Bus</span>
+          </div>
+          <div class="transport-btn" onclick="selectTransport(this,'taxi')" data-mode="taxi">
+            <span class="transport-icon">🚕</span>
+            <span class="transport-label">Taxi</span>
+          </div>
+          <div class="transport-btn" onclick="selectTransport(this,'walk')" data-mode="walk">
+            <span class="transport-icon">🚶</span>
+            <span class="transport-label">Walk</span>
+          </div>
+          <div class="transport-btn" onclick="selectTransport(this,'bike')" data-mode="bike">
+            <span class="transport-icon">🚲</span>
+            <span class="transport-label">Bike</span>
+          </div>
+          <div class="transport-btn" onclick="selectTransport(this,'car')" data-mode="car">
+            <span class="transport-icon">🚗</span>
+            <span class="transport-label">Car</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ROUTE RESULT -->
+      <div class="route-result" id="routeResult">
+        <div class="section-header">
+          <div class="section-title">🛣️ Best Route</div>
+          <div class="badge badge-coral" id="routeBadge">Fastest</div>
+        </div>
+        <div class="route-summary" id="routeSummary"></div>
+        <div class="route-steps" id="routeSteps"></div>
+        <button class="btn btn-navy btn-full" onclick="openNaverNavi()">🗺️ Open in Naver Map</button>
+      </div>
+
+      <!-- TIME PICKER -->
+      <div class="time-card" id="timeCard" style="display:none;">
+        <div class="section-label" data-en="⏱️ How much free time do you have there?" data-ko="⏱️ 거기서 얼마나 여유 시간이 있어요?">⏱️ How much free time do you have there?</div>
+        <div class="time-grid">
+          <div class="time-btn" onclick="selectTime(this,'1h')" data-time="1h">
+            <span class="time-emoji">☕</span>
+            <span class="time-label">1 Hour</span>
+            <span class="time-sublabel">Quick trip</span>
+          </div>
+          <div class="time-btn" onclick="selectTime(this,'2h')" data-time="2h">
+            <span class="time-emoji">🎵</span>
+            <span class="time-label">2 Hours</span>
+            <span class="time-sublabel">Chill vibe</span>
+          </div>
+          <div class="time-btn" onclick="selectTime(this,'3h')" data-time="3h">
+            <span class="time-emoji">🌸</span>
+            <span class="time-label">3 Hours</span>
+            <span class="time-sublabel">Explorer</span>
+          </div>
+          <div class="time-btn" onclick="selectTime(this,'half')" data-time="half">
+            <span class="time-emoji">🍜</span>
+            <span class="time-label">Half Day</span>
+            <span class="time-sublabel">Deep dive</span>
+          </div>
+          <div class="time-btn" onclick="selectTime(this,'full')" data-time="full">
+            <span class="time-emoji">🎆</span>
+            <span class="time-label">Full Day</span>
+            <span class="time-sublabel">All in!</span>
+          </div>
+          <div class="time-btn" onclick="selectTime(this,'overnight')" data-time="overnight">
+            <span class="time-emoji">🌙</span>
+            <span class="time-label">Overnight</span>
+            <span class="time-sublabel">Stay here</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- NEARBY PLACES RECOMMENDATIONS -->
+      <div class="places-card" id="placesCard">
+        <div class="section-header">
+          <div class="section-title">✨ Places to Visit</div>
+          <span class="badge badge-mint" id="timeLabel">2h</span>
+        </div>
+        <div class="places-kori-tip" id="koriPlaceTip">
+          <span>🧑‍🎤</span>
+          <span id="koriTipText">Kori's top picks for you!</span>
+        </div>
+        <div class="place-list" id="placeList"></div>
+      </div>
+
+      <!-- ROUTE TIMELINE -->
+      <div class="route-timeline" id="routeTimeline">
+        <div class="section-title" style="margin-bottom:14px;">🗓️ Your Suggested Itinerary</div>
+        <div id="timelineItems"></div>
+      </div>
+
+      <!-- K-TIPS BANNER -->
+      <div class="tips-banner">
+        <div class="tips-banner-title">🧑‍🎤 Kori's Korea Survival Kit</div>
+        <div class="tip-chips">
+          <div class="tip-chip" onclick="showTip('tmoney')">💳 T-Money</div>
+          <div class="tip-chip" onclick="showTip('wifi')">📶 Pocket WiFi</div>
+          <div class="tip-chip" onclick="showTip('food')">🍜 Must Eat</div>
+          <div class="tip-chip" onclick="showTip('etiquette')">🙏 Etiquette</div>
+          <div class="tip-chip" onclick="showTip('apps')">📱 K-Apps</div>
+          <div class="tip-chip" onclick="showTip('transport')">🚇 T-Card</div>
+        </div>
+      </div>
+
+      <!-- FAVORITES -->
+      <div class="fav-card" id="favCard">
+        <div class="section-header">
+          <div class="section-title">❤️ Saved Places</div>
+          <span class="section-link" onclick="clearFavs()">Clear all</span>
+        </div>
+        <div id="favList">
+          <div class="fav-empty">❤️ Save places you love!<br><small>Tap ♡ on any place card</small></div>
+        </div>
+      </div>
+
+    </div><!-- /tab-home -->
+
+    <!-- TAB: EXPLORE -->
+    <div class="tab-pane" id="tab-explore">
+      <div class="section-title" style="margin-bottom:12px;">🌏 Explore Korea</div>
+      <div class="category-filter">
+        <button class="cat-btn active" onclick="filterExplore(this,'all')">🇰🇷 All</button>
+        <button class="cat-btn" onclick="filterExplore(this,'food')">🍜 Food</button>
+        <button class="cat-btn" onclick="filterExplore(this,'culture')">🏯 Culture</button>
+        <button class="cat-btn" onclick="filterExplore(this,'nature')">🌿 Nature</button>
+        <button class="cat-btn" onclick="filterExplore(this,'night')">🌙 Nightlife</button>
+        <button class="cat-btn" onclick="filterExplore(this,'shop')">🛍️ Shopping</button>
+      </div>
+      <div class="explore-grid" id="exploreGrid"></div>
+    </div>
+
+    <!-- TAB: TIPS -->
+    <div class="tab-pane" id="tab-tips">
+      <div class="section-title" style="margin-bottom:12px;">💡 K-Culture Tips</div>
+      <div id="tipsList"></div>
+    </div>
+
+    <!-- TAB: PROFILE -->
+    <div class="tab-pane" id="tab-profile">
+      <div class="profile-header">
+        <div class="profile-mascot">🧑‍🎤</div>
+        <div class="profile-name">K-Traveler 여행자</div>
+        <div class="profile-sub">Let Kori guide your adventure! ✨</div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-num" id="statSaved">0</div>
+          <div class="stat-label">Saved</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statSearches">0</div>
+          <div class="stat-label">Searches</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num" id="statTips">0</div>
+          <div class="stat-label">Tips Read</div>
+        </div>
+      </div>
+      <div class="fav-card">
+        <div class="section-title" style="margin-bottom:10px;">⚙️ Naver Map API Key</div>
+        <div style="margin-bottom:8px;">
+          <div class="loc-label">Client ID</div>
+          <input class="search-input" id="apiKeyInput" type="text" placeholder="Enter your Naver Maps Client ID" style="width:100%;margin-top:4px;">
+        </div>
+        <button class="btn btn-coral btn-full" onclick="saveApiKey()">💾 Save & Apply</button>
+        <div style="font-size:0.75rem;color:var(--text-soft);margin-top:8px;font-weight:600;">
+          Get your key at: <span style="color:var(--coral);">console.ncloud.com</span>
+        </div>
+      </div>
+      <div class="fav-card">
+        <div class="section-title" style="margin-bottom:10px;">📲 Useful Apps in Korea</div>
+        <div id="appsList"></div>
+      </div>
+    </div>
+
+  </div><!-- /scroll-area -->
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home', this)">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Home</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('explore', this)">
+      <span class="nav-icon">🌏</span>
+      <span class="nav-label">Explore</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('tips', this)">
+      <span class="nav-icon">💡</span>
+      <span class="nav-label">Tips</span>
+    </div>
+    <div class="nav-item" onclick="switchTab('profile', this)">
+      <span class="nav-icon">🧑‍🎤</span>
+      <span class="nav-label">Profile</span>
+    </div>
+  </nav>
+</div><!-- /app -->
+
+<script>
+// ===== STATE =====
+const state = {
+  lang: 'en',
+  lat: null, lng: null,
+  destName: '', destLat: null, destLng: null,
+  transport: 'subway',
+  timeSlot: null,
+  favorites: JSON.parse(localStorage.getItem('ktm_favs') || '[]'),
+  searches: parseInt(localStorage.getItem('ktm_searches') || '0'),
+  tipsRead: parseInt(localStorage.getItem('ktm_tips') || '0'),
+  map: null,
+  destMarker: null,
+  clientId: localStorage.getItem('ktm_clientId') || ''
+};
+
+// ===== DATA =====
+const KORI_TIPS = [
+  "안녕하세요~ (Annyeonghaseyo) means Hello! 🙏",
+  "Always bow slightly when greeting someone! 💝",
+  "T-money card works on ALL public transport! 💳",
+  "Korean BBQ is best with soju! 🥩🍶",
+  "Convenience stores (편의점) are open 24/7! 🏪",
+  "Download Kakao Maps — locals use it! 📱",
+  "Take off shoes when entering homes 👟",
+  "Tipping is NOT required in Korea! 🙅",
+  "Wifi is everywhere — cafés, subway, parks! 📶",
+  "Nanta show & K-pop concerts are unforgettable! 🎵",
+  "Try 찜질방 (jjimjilbang) — Korean sauna! 🧖",
+  "The subway is air-conditioned & super clean! 🚇"
+];
+
+const TRANSPORT_DATA = {
+  subway: {
+    icon: '🚇', label: 'Subway',
+    steps_en: [
+      { title: 'Walk to nearest station', detail: 'Use Kakao Maps to find entrance', time: '5 min' },
+      { title: 'Buy T-money or ticket', detail: 'Reload card at station kiosk', time: '2 min' },
+      { title: 'Board the train', detail: 'Check line color on platform signs', time: 'Varies' },
+      { title: 'Transfer if needed', detail: 'Follow color-coded signs at station', time: '3 min' },
+      { title: 'Arrive at destination', detail: 'Check exit number on platform', time: '✅' }
+    ],
+    tip: 'Subway is fastest & cheapest! T-money card saves money 💳'
+  },
+  bus: {
+    icon: '🚌', label: 'Bus',
+    steps_en: [
+      { title: 'Find the bus stop', detail: 'Use Naver Maps for bus number', time: '3 min' },
+      { title: 'Check bus number', detail: 'Blue = express, Green = local, Red = metro', time: '1 min' },
+      { title: 'Tap T-money on boarding', detail: 'Tag card on reader at front', time: '30 sec' },
+      { title: 'Ring bell before stop', detail: 'Press button near your seat', time: 'Varies' },
+      { title: 'Tap out on exit', detail: 'Tag card again when leaving!', time: '✅' }
+    ],
+    tip: 'Tag out when leaving bus — saves transfer discount! 🚌'
+  },
+  taxi: {
+    icon: '🚕', label: 'Taxi',
+    steps_en: [
+      { title: 'Open Kakao T app', detail: 'or wave down a taxi on street', time: '2 min' },
+      { title: 'Show destination', detail: 'Type address or show on phone', time: '1 min' },
+      { title: 'Enjoy the ride!', detail: 'AC is on, driver will play music 🎵', time: 'Varies' },
+      { title: 'Pay & arrive', detail: 'Card or cash accepted', time: '✅' }
+    ],
+    tip: 'Black taxis = premium. Orange cap = internationally friendly! 🚕'
+  },
+  walk: {
+    icon: '🚶', label: 'Walking',
+    steps_en: [
+      { title: 'Start navigation', detail: 'Open Naver Maps walking mode', time: '1 min' },
+      { title: 'Follow blue route', detail: 'Pedestrian paths are well-signed', time: 'Varies' },
+      { title: 'Cross at traffic lights', detail: 'Never jaywalk — fines apply!', time: '— ' },
+      { title: 'Enjoy street food', detail: 'Look out for tteokbokki stands! 🌶️', time: '— ' },
+      { title: 'Arrive refreshed!', detail: 'Korea streets are very safe 🌟', time: '✅' }
+    ],
+    tip: 'Great for exploring alleys (골목) with hidden cafés! ☕'
+  },
+  bike: {
+    icon: '🚲', label: 'Bike (Ttareungyi)',
+    steps_en: [
+      { title: 'Find Ttareungyi station', detail: 'Seoul public bike sharing system', time: '3 min' },
+      { title: 'Sign up via app', detail: 'Download 따릉이 app, ₩1,000/hour', time: '5 min' },
+      { title: 'Unlock with QR code', detail: 'Scan at the bike dock', time: '1 min' },
+      { title: 'Use bike lanes', detail: 'Han River paths are stunning! 🌊', time: 'Varies' },
+      { title: 'Return at any dock', detail: 'Park at any Ttareungyi station', time: '✅' }
+    ],
+    tip: 'Han River cycling = peak Seoul experience! 🌉'
+  },
+  car: {
+    icon: '🚗', label: 'Car / KTX',
+    steps_en: [
+      { title: 'Use Naver Maps driving mode', detail: 'Or T-map for Korean roads', time: '2 min' },
+      { title: 'Pay highway toll', detail: 'Hi-Pass electronic or cash booth', time: 'Varies' },
+      { title: 'Find parking (주차)', detail: 'Use Naver Maps parking finder', time: '5–10 min' },
+      { title: 'Lock & enjoy!', detail: 'Korea is very safe for cars', time: '✅' }
+    ],
+    tip: 'For longer trips, KTX train is faster & cheaper! 🚄'
+  }
+};
+
+const PLACES_DATA = {
+  '1h': [
+    { name: 'Local café', emoji: '☕', color: '#FFF8DC', detail: '0.3km away · 45 min', tags: ['food'], tip: 'Try 달고나 (Dalgona) coffee!' },
+    { name: 'Convenience store tour', emoji: '🏪', color: '#E0FAF8', detail: '0.1km · 30 min', tags: ['food'], tip: 'GS25 has amazing kimbap!' },
+    { name: 'Nearby park', emoji: '🌳', color: '#E8FFE8', detail: '0.5km · 40 min', tags: ['nature'], tip: 'Perfect for photo spots!' }
+  ],
+  '2h': [
+    { name: 'Street food market', emoji: '🌶️', color: '#FFE8EE', detail: '0.8km · 1.5h', tags: ['food'], tip: 'Try tteokbokki & hotteok!' },
+    { name: 'Photo walk', emoji: '📸', color: '#F0EBFF', detail: '1km · 1h', tags: ['culture'], tip: 'Hanbok rental nearby!' },
+    { name: 'Cute café', emoji: '🐱', color: '#FFF8DC', detail: '0.4km · 1h', tags: ['food'], tip: 'Cat cafés are a must-try!' },
+    { name: 'Local market', emoji: '🏮', color: '#FFE8EE', detail: '1.2km · 1.5h', tags: ['culture', 'shop'], tip: 'Great for souvenirs!' }
+  ],
+  '3h': [
+    { name: 'Palace visit', emoji: '🏯', color: '#FFF8DC', detail: '1.5km · 2h', tags: ['culture'], tip: 'Free with Korean national dress!' },
+    { name: 'Hanok Village', emoji: '🏘️', color: '#E0FAF8', detail: '2km · 1.5h', tags: ['culture'], tip: 'Instagram goldmine!' },
+    { name: 'Museum', emoji: '🎨', color: '#F0EBFF', detail: '1km · 2h', tags: ['culture'], tip: 'Free national museums!' },
+    { name: 'BBQ lunch', emoji: '🥩', color: '#FFE8EE', detail: '0.5km · 1.5h', tags: ['food'], tip: 'Samgyeopsal (삼겹살) is life!' },
+    { name: 'K-pop store', emoji: '🎵', color: '#FFE8EE', detail: '1km · 1h', tags: ['shop'], tip: 'Find your fave idol merch!' }
+  ],
+  'half': [
+    { name: 'Gyeongbokgung Palace', emoji: '🏯', color: '#FFF8DC', detail: '2km · 2h', tags: ['culture'], tip: 'Wear hanbok for free entry!' },
+    { name: 'Bukchon Hanok Village', emoji: '🏘️', color: '#E0FAF8', detail: '3km · 1.5h', tags: ['culture'], tip: 'Best photo spot in Seoul!' },
+    { name: 'Insadong Street', emoji: '🎨', color: '#F0EBFF', detail: '2.5km · 1h', tags: ['culture', 'shop'], tip: 'Traditional crafts & tea!' },
+    { name: 'Korean BBQ dinner', emoji: '🥩', color: '#FFE8EE', detail: '1km · 1.5h', tags: ['food'], tip: 'Gopchang is underrated!' },
+    { name: 'N Seoul Tower', emoji: '🗼', color: '#E0FAF8', detail: '4km · 2h', tags: ['nature'], tip: 'Love locks at the top!' }
+  ],
+  'full': [
+    { name: 'Gyeongbokgung Palace', emoji: '🏯', color: '#FFF8DC', detail: '2km · 2h', tags: ['culture'], tip: 'Morning is less crowded!' },
+    { name: 'Bukchon Hanok Village', emoji: '🏘️', color: '#E0FAF8', detail: '3km · 1.5h', tags: ['culture'], tip: 'Wear hanbok here!' },
+    { name: 'Gwangjang Market lunch', emoji: '🥘', color: '#FFE8EE', detail: '2km · 1h', tags: ['food'], tip: 'Bindaetteok & mayak kimbap!' },
+    { name: 'Dongdaemun Design Plaza', emoji: '🏙️', color: '#F0EBFF', detail: '3km · 1.5h', tags: ['culture', 'shop'], tip: 'Zaha Hadid architecture!' },
+    { name: 'Myeongdong shopping', emoji: '🛍️', color: '#FFF8DC', detail: '4km · 2h', tags: ['shop'], tip: 'K-beauty brands galore!' },
+    { name: 'Hongdae nightlife', emoji: '🎶', color: '#FFE8EE', detail: '6km · 2h', tags: ['night'], tip: 'Free street performances!' }
+  ],
+  'overnight': [
+    { name: 'Jjimjilbang (찜질방)', emoji: '🧖', color: '#FFE8EE', detail: '1km · overnight', tags: ['culture'], tip: 'Sleep inside for ₩12,000!' },
+    { name: 'Hongdae bar hop', emoji: '🍺', color: '#F0EBFF', detail: '5km · 3h', tags: ['night'], tip: 'Makgeolli bars are cozy!' },
+    { name: 'Noryangjin Fish Market', emoji: '🐟', color: '#E0FAF8', detail: '8km · 2h', tags: ['food'], tip: 'Open 24h, eat fresh sashimi!' },
+    { name: 'Han River night picnic', emoji: '🌉', color: '#FFF8DC', detail: '3km · 2h', tags: ['nature', 'night'], tip: 'CU sells fried chicken nearby!' },
+    { name: 'Itaewon nightlife', emoji: '🎵', color: '#FFE8EE', detail: '7km · 2h', tags: ['night'], tip: 'International crowd, great bars!' }
+  ]
+};
+
+const EXPLORE_DATA = [
+  { name: 'Gyeongbokgung', emoji: '🏯', bg: '#FFF8DC', cat: 'culture', meta: '⭐ 4.9 · Jongno-gu' },
+  { name: 'Myeongdong', emoji: '🛍️', bg: '#FFE8EE', cat: 'shop', meta: '⭐ 4.7 · Jung-gu' },
+  { name: 'Bukchon Hanok', emoji: '🏘️', bg: '#E0FAF8', cat: 'culture', meta: '⭐ 4.8 · Jongno-gu' },
+  { name: 'Hongdae', emoji: '🎨', bg: '#F0EBFF', cat: 'night', meta: '⭐ 4.8 · Mapo-gu' },
+  { name: 'Gwangjang Market', emoji: '🥘', bg: '#FFE8EE', cat: 'food', meta: '⭐ 4.9 · Jongno-gu' },
+  { name: 'Han River Park', emoji: '🌊', bg: '#E0FAF8', cat: 'nature', meta: '⭐ 4.8 · Seoul' },
+  { name: 'N Seoul Tower', emoji: '🗼', bg: '#E8FFE8', cat: 'nature', meta: '⭐ 4.7 · Yongsan-gu' },
+  { name: 'Insadong', emoji: '🎭', bg: '#F0EBFF', cat: 'culture', meta: '⭐ 4.6 · Jongno-gu' },
+  { name: 'Gangnam Style!', emoji: '🕺', bg: '#FFE8EE', cat: 'shop', meta: '⭐ 4.7 · Gangnam-gu' },
+  { name: 'DDP', emoji: '🏙️', bg: '#E0FAF8', cat: 'culture', meta: '⭐ 4.7 · Jung-gu' },
+  { name: 'Jagalchi Market', emoji: '🐟', bg: '#E8FFE8', cat: 'food', meta: '⭐ 4.8 · Busan' },
+  { name: 'Jjimjilbang', emoji: '🧖', bg: '#FFE8EE', cat: 'culture', meta: '⭐ 4.9 · Various' },
+  { name: 'Namsan Park', emoji: '🌿', bg: '#E8FFE8', cat: 'nature', meta: '⭐ 4.8 · Yongsan' },
+  { name: 'Itaewon Bars', emoji: '🎶', bg: '#F0EBFF', cat: 'night', meta: '⭐ 4.6 · Yongsan-gu' },
+];
+
+const TIPS_DATA = [
+  { icon: '💳', color: '#FFF8DC', title: 'T-Money Card', body: 'Get a T-money card at any convenience store or subway station for ₩4,000–5,000. Load it with cash and use it on ALL subways, buses, and even some taxis! Transfer discount applies if you change transport within 30 minutes.', id: 'tmoney' },
+  { icon: '📶', color: '#E0FAF8', title: 'Stay Connected', body: 'Rent a pocket WiFi at Incheon Airport before leaving arrivals. Costs around ₩6,000–10,000/day. Or buy a Tourist SIM at airport convenience stores. Free WiFi is also available in all subway stations!', id: 'wifi' },
+  { icon: '🍜', color: '#FFE8EE', title: 'Must-Eat Foods', body: '🌶️ Tteokbokki (spicy rice cakes)\n🥩 Samgyeopsal BBQ\n🍱 Bibimbap\n🥟 Mandu (dumplings)\n🧆 Hotteok (sweet pancake)\n🍰 Bingsu (shaved ice)\n🧋 Korean coffee (so cheap!)', id: 'food' },
+  { icon: '🙏', color: '#F0EBFF', title: 'Korean Etiquette', body: '✅ Bow slightly when greeting\n✅ Use both hands to give/receive\n✅ Remove shoes at homes/some restaurants\n✅ Don\'t tip — it\'s not custom here\n✅ Don\'t eat while walking\n✅ Let elderly sit on subway first', id: 'etiquette' },
+  { icon: '📱', color: '#E8FFE8', title: 'Essential Apps', body: '🗺️ Naver Maps — best for Korea\n🚕 Kakao T — taxis (has English!)\n🔤 Papago — translation by Naver\n🍽️ Coupang Eats — food delivery\n🎫 Interpark — events & concerts\n🚌 Seoul Bus — bus tracking', id: 'apps' },
+  { icon: '🚇', color: '#E0FAF8', title: 'Subway Guide', body: 'Seoul Metro runs 5:30am–midnight. Lines are color-coded (Line 1 = dark blue, Line 2 = green, etc.). Announcements in Korean, English, Japanese & Chinese. Seats nearest doors are "priority seats" — please give them up for elderly!', id: 'transport' },
+  { icon: '🧖', color: '#FFE8EE', title: 'Jjimjilbang Experience', body: 'Korean saunas (찜질방) are open 24/7 and very affordable (₩10,000–15,000). You can sleep inside overnight! They have hot/cold baths, saunas, sleeping rooms, and even food. Bring a change of clothes!', id: 'jjimjil' },
+  { icon: '🏪', color: '#FFF8DC', title: 'Convenience Store Life', body: 'GS25, CU, 7-Eleven, and Emart24 are everywhere. Open 24/7, sell amazing food: kimbap (₩1,500), ramen (cook in store!), triangle sandwiches, fried chicken, and coffee. ATMs inside accept foreign cards!', id: 'konbini' },
+];
+
+const APPS_DATA = [
+  { name: 'Naver Maps', emoji: '🗺️', desc: 'Most accurate maps in Korea' },
+  { name: 'Kakao T', emoji: '🚕', desc: 'English-friendly taxi app' },
+  { name: 'Papago', emoji: '🔤', desc: 'Best Korean translator' },
+  { name: 'T-money Pay', emoji: '💳', desc: 'Digital transport card' },
+  { name: 'Coupang Eats', emoji: '🍔', desc: 'Food delivery everywhere' },
+  { name: 'Klook', emoji: '🎫', desc: 'Tours & activity booking' },
+];
+
+// ===== SPLASH =====
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    setTimeout(() => document.getElementById('splash').remove(), 700);
+  }, 2000);
+
+  loadWeather();
+  renderExplore('all');
+  renderTips();
+  renderApps();
+  loadFavorites();
+  updateStats();
+
+  const savedKey = state.clientId;
+  if (savedKey) {
+    document.getElementById('apiKeyInput').value = savedKey;
+    loadNaverMap();
+  }
+
+  setTimeout(() => koriAutoTip(), 3500);
+});
+
+// ===== WEATHER =====
+async function loadWeather() {
+  try {
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current_weather=true');
+    const data = await res.json();
+    const temp = Math.round(data.current_weather.temperature);
+    const wc = data.current_weather.weathercode;
+    const icon = wc < 3 ? '☀️' : wc < 50 ? '⛅' : wc < 70 ? '🌧️' : '❄️';
+    document.getElementById('weatherChip').innerHTML = `${icon} ${temp}°C`;
+  } catch(e) { /* silent */ }
+}
+
+// ===== LANGUAGE =====
+function toggleLang() {
+  state.lang = state.lang === 'en' ? 'ko' : 'en';
+  document.querySelectorAll('[data-en]').forEach(el => {
+    el.textContent = el.dataset[state.lang];
+  });
+  document.getElementById('langBtn').textContent = state.lang === 'en' ? '한/EN' : 'EN/한';
+  if (state.lang === 'ko') {
+    document.getElementById('destInput').placeholder = document.getElementById('destInput').dataset.placeholderKo || '목적지 검색...';
+  } else {
+    document.getElementById('destInput').placeholder = 'Search destination... e.g. Gyeongbokgung';
+  }
+}
+
+// ===== LOCATION =====
+function getLocation() {
+  const row = document.getElementById('locRow');
+  document.getElementById('locName').textContent = 'Detecting location... 📍';
+  document.getElementById('locDetail').textContent = 'Please allow location access';
+
+  if (!navigator.geolocation) {
+    showToast('Geolocation not supported');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      state.lat = pos.coords.latitude;
+      state.lng = pos.coords.longitude;
+      reverseGeocode(state.lat, state.lng);
+      if (state.clientId) loadNaverMap();
+    },
+    err => {
+      // Demo fallback: Seoul
+      state.lat = 37.5665;
+      state.lng = 126.9780;
+      document.getElementById('locName').textContent = '📍 Seoul (Demo Mode)';
+      document.getElementById('locDetail').textContent = 'Using Seoul as demo location';
+      showToast('Using demo location: Seoul 🇰🇷');
+      if (state.clientId) loadNaverMap();
+    },
+    { timeout: 8000 }
+  );
+}
+
+async function reverseGeocode(lat, lng) {
+  document.getElementById('locName').textContent = `📍 ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  document.getElementById('locDetail').textContent = 'Location detected! Ready to explore 🎉';
+}
+
+// ===== NAVER MAP =====
+function loadNaverMap() {
+  if (!state.clientId) {
+    showToast('Add your Naver Maps Client ID in Profile tab! 🗺️');
+    return;
+  }
+
+  const existingScript = document.querySelector('script[src*="maps.js"]');
+  if (existingScript) {
+    initMap();
+    return;
+  }
+
+  const script = document.createElement('script');
+  script.src = `https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${state.clientId}`;
+  script.onload = initMap;
+  script.onerror = () => showToast('Invalid API key. Check your Client ID.');
+  document.head.appendChild(script);
+}
+
+function initMap() {
+  const lat = state.lat || 37.5665;
+  const lng = state.lng || 126.9780;
+
+  document.getElementById('mapPlaceholder').style.display = 'none';
+
+  if (!window.naver) { showToast('Naver Maps failed to load'); return; }
+
+  state.map = new naver.maps.Map('naverMap', {
+    center: new naver.maps.LatLng(lat, lng),
+    zoom: 15,
+    zoomControl: false,
+    scaleControl: false,
+  });
+
+  // Current location marker
+  new naver.maps.Marker({
+    position: new naver.maps.LatLng(lat, lng),
+    map: state.map,
+    icon: {
+      content: '<div style="width:20px;height:20px;background:var(--coral);border:3px solid white;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>',
+      anchor: new naver.maps.Point(10, 10)
+    }
+  });
+}
+
+function centerMap() {
+  if (state.map && state.lat) {
+    state.map.setCenter(new naver.maps.LatLng(state.lat, state.lng));
+    state.map.setZoom(15);
+  } else {
+    getLocation();
+  }
+}
+
+// ===== SEARCH =====
+function searchDestination() {
+  const input = document.getElementById('destInput').value.trim();
+  if (!input) { showToast('Enter a destination first! 🗺️'); return; }
+
+  state.destName = input;
+  state.searches++;
+  localStorage.setItem('ktm_searches', state.searches);
+  updateStats();
+
+  // Show route result
+  showRouteResult(input);
+
+  // Show time picker
+  document.getElementById('timeCard').style.display = 'block';
+  document.getElementById('timeCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if (state.clientId && state.map) {
+    searchNaverPlace(input);
+  }
+}
+
+function searchNaverPlace(query) {
+  // Naver Search API (요청시 서버 프록시 필요)
+  // Demo: simulate map marker at random offset
+  const lat = (state.lat || 37.5665) + (Math.random() - 0.5) * 0.02;
+  const lng = (state.lng || 126.9780) + (Math.random() - 0.5) * 0.02;
+
+  state.destLat = lat;
+  state.destLng = lng;
+
+  if (state.destMarker) state.destMarker.setMap(null);
+
+  if (state.map && window.naver) {
+    state.destMarker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(lat, lng),
+      map: state.map,
+      icon: {
+        content: `<div style="background:var(--coral);color:white;padding:6px 10px;border-radius:20px;font-weight:800;font-size:12px;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,0.2);">📍 ${query}</div>`,
+        anchor: new naver.maps.Point(50, 20)
+      }
+    });
+
+    state.map.setCenter(new naver.maps.LatLng(lat, lng));
+  }
+}
+
+// ===== TRANSPORT =====
+function selectTransport(el, mode) {
+  document.querySelectorAll('.transport-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.transport = mode;
+  if (state.destName) showRouteResult(state.destName);
+}
+
+function showRouteResult(dest) {
+  const d = TRANSPORT_DATA[state.transport];
+  const result = document.getElementById('routeResult');
+  const summary = document.getElementById('routeSummary');
+  const steps = document.getElementById('routeSteps');
+
+  const times = { subway: '~25 min', bus: '~35 min', taxi: '~18 min', walk: '~45 min', bike: '~30 min', car: '~22 min' };
+  const costs = { subway: '₩1,250', bus: '₩1,200', taxi: '₩7,000–', walk: 'Free! 🎉', bike: '₩1,000/h', car: '₩varies' };
+
+  summary.innerHTML = `
+    <div class="route-summary-icon">${d.icon}</div>
+    <div class="route-summary-text">
+      <h3>${d.label} to ${dest}</h3>
+      <p>${times[state.transport]} · ${costs[state.transport]} · ${d.tip}</p>
+    </div>
+  `;
+
+  steps.innerHTML = d.steps_en.map((s, i) => `
+    <div class="route-step">
+      <div class="step-num">${i+1}</div>
+      <div class="step-content">
+        <div class="step-title">${s.title}</div>
+        <div class="step-detail">${s.detail}</div>
+      </div>
+      <div class="step-time">${s.time}</div>
+    </div>
+  `).join('');
+
+  result.classList.add('show');
+}
+
+function openNaverNavi() {
+  const dest = state.destName || 'Seoul';
+  const lat = state.destLat || 37.5796;
+  const lng = state.destLng || 126.9770;
+  const url = `nmap://route/${state.transport === 'walk' ? 'walk' : 'car'}?dlat=${lat}&dlng=${lng}&dname=${encodeURIComponent(dest)}&appname=ktourmate`;
+  window.location.href = url;
+  setTimeout(() => window.open(`https://map.naver.com/v5/search/${encodeURIComponent(dest)}`, '_blank'), 500);
+}
+
+// ===== TIME SELECTION =====
+function selectTime(el, time) {
+  document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  state.timeSlot = time;
+  document.getElementById('timeLabel').textContent = el.querySelector('.time-label').textContent;
+  showPlaces(time);
+}
+
+function showPlaces(time) {
+  const places = PLACES_DATA[time] || PLACES_DATA['2h'];
+  const list = document.getElementById('placeList');
+  const card = document.getElementById('placesCard');
+  const timeline = document.getElementById('routeTimeline');
+  const koriBubble = document.getElementById('koriTipText');
+
+  const tips = {
+    '1h': "Quick but worth it! Try the coffee first ☕",
+    '2h': "Perfect for exploring without rush! 🌸",
+    '3h': "You've got time — go deep! 🎵",
+    'half': "Half-day explorer mode activated! 🚀",
+    'full': "Full day K-culture immersion! 🇰🇷",
+    'overnight': "Sleep in Korea — you won't regret it! 🌙"
+  };
+
+  koriBubble.textContent = tips[time] || 'Kori recommends these!';
+
+  list.innerHTML = places.map((p, i) => `
+    <div class="place-item" onclick="showPlaceModal('${p.name}', '${p.emoji}', '${p.tip}', '${p.detail}')">
+      <div class="place-emoji" style="background:${p.color}">${p.emoji}</div>
+      <div class="place-info">
+        <div class="place-name">${p.name}</div>
+        <div class="place-detail">${p.detail}</div>
+        <div class="place-tags">
+          ${p.tags.map(t => `<span class="place-tag tag-${t}">${t}</span>`).join('')}
+        </div>
+      </div>
+      <div class="place-arrow">→</div>
+    </div>
+  `).join('');
+
+  card.classList.add('show');
+
+  // Build timeline
+  buildTimeline(places, time);
+  timeline.classList.add('show');
+
+  setTimeout(() => card.scrollIntoView({ behavior: 'smooth' }), 200);
+}
+
+function buildTimeline(places, time) {
+  const container = document.getElementById('timelineItems');
+  const startHour = 10;
+  let hour = startHour;
+
+  const timelineHtml = places.map((p, i) => {
+    const timeStr = `${hour}:00`;
+    const mins = i === 0 ? 30 : 60;
+    hour = Math.floor(hour + mins / 60);
+    const minStr = hour < 12 ? 'AM' : 'PM';
+
+    return `
+      <div class="timeline-item">
+        <div class="timeline-dot">
+          <div class="dot">${i+1}</div>
+        </div>
+        <div class="timeline-content">
+          <div class="timeline-time">${timeStr} ${minStr}</div>
+          <div class="timeline-title">${p.emoji} ${p.name}</div>
+          <div class="timeline-note">${p.tip}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = timelineHtml;
+}
+
+// ===== MODAL =====
+function showPlaceModal(name, emoji, tip, detail) {
+  const content = document.getElementById('modalContent');
+  content.innerHTML = `
+    <div class="modal-title">${emoji} ${name}</div>
+    <div class="modal-subtitle">${detail}</div>
+    <div class="modal-body">
+      <strong>🧑‍🎤 Kori's Tip:</strong><br>${tip}
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-coral" style="flex:1" onclick="saveFavorite('${name}','${emoji}','${detail}')">❤️ Save</button>
+      <button class="btn btn-navy" style="flex:1" onclick="openNaverSearch('${name}')">🗺️ Navigate</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+
+function showTip(id) {
+  const tip = TIPS_DATA.find(t => t.id === id) || TIPS_DATA[0];
+  state.tipsRead++;
+  localStorage.setItem('ktm_tips', state.tipsRead);
+  updateStats();
+
+  const content = document.getElementById('modalContent');
+  content.innerHTML = `
+    <div class="modal-title">
+      <div style="width:40px;height:40px;background:${tip.color};border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">${tip.icon}</div>
+      ${tip.title}
+    </div>
+    <div class="modal-body" style="white-space:pre-line;">${tip.body}</div>
+    <button class="btn btn-coral btn-full" style="margin-top:12px;" onclick="closeModal()">Got it! 🙌</button>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+
+function showExploreModal(name, emoji, meta) {
+  const content = document.getElementById('modalContent');
+  content.innerHTML = `
+    <div class="modal-title">${emoji} ${name}</div>
+    <div class="modal-subtitle">${meta}</div>
+    <div class="modal-body">A must-visit spot in Korea! Tap Navigate to open in Naver Maps and get directions from your location.</div>
+    <div class="modal-actions">
+      <button class="btn btn-coral" style="flex:1" onclick="saveFavorite('${name}','${emoji}','${meta}')">❤️ Save</button>
+      <button class="btn btn-navy" style="flex:1" onclick="openNaverSearch('${name}')">🗺️ Navigate</button>
+    </div>
+  `;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('show');
+  }
+}
+
+function openNaverSearch(name) {
+  window.open(`https://map.naver.com/v5/search/${encodeURIComponent(name)}`, '_blank');
+  closeModal();
+}
+
+// ===== FAVORITES =====
+function saveFavorite(name, emoji, detail) {
+  const fav = { name, emoji, detail };
+  if (!state.favorites.find(f => f.name === name)) {
+    state.favorites.push(fav);
+    localStorage.setItem('ktm_favs', JSON.stringify(state.favorites));
+    loadFavorites();
+    updateStats();
+    showToast(`❤️ ${name} saved!`);
+  } else {
+    showToast('Already saved!');
+  }
+  closeModal();
+}
+
+function removeFavorite(name) {
+  state.favorites = state.favorites.filter(f => f.name !== name);
+  localStorage.setItem('ktm_favs', JSON.stringify(state.favorites));
+  loadFavorites();
+  updateStats();
+}
+
+function clearFavs() {
+  state.favorites = [];
+  localStorage.setItem('ktm_favs', '[]');
+  loadFavorites();
+  updateStats();
+}
+
+function loadFavorites() {
+  const list = document.getElementById('favList');
+  if (state.favorites.length === 0) {
+    list.innerHTML = '<div class="fav-empty">❤️ Save places you love!<br><small>Tap ♡ on any place card</small></div>';
+    return;
+  }
+  list.innerHTML = state.favorites.map(f => `
+    <div class="fav-item">
+      <div class="fav-emoji">${f.emoji}</div>
+      <div class="fav-info">
+        <div class="fav-name">${f.name}</div>
+        <div class="fav-detail">${f.detail}</div>
+      </div>
+      <div class="fav-remove" onclick="removeFavorite('${f.name}')">✕</div>
+    </div>
+  `).join('');
+}
+
+// ===== EXPLORE =====
+function renderExplore(cat) {
+  const grid = document.getElementById('exploreGrid');
+  const filtered = cat === 'all' ? EXPLORE_DATA : EXPLORE_DATA.filter(e => e.cat === cat);
+  grid.innerHTML = filtered.map(e => `
+    <div class="explore-card" onclick="showExploreModal('${e.name}','${e.emoji}','${e.meta}')">
+      <div class="explore-img" style="background:${e.bg}">${e.emoji}</div>
+      <div class="explore-body">
+        <div class="explore-name">${e.name}</div>
+        <div class="explore-meta">${e.meta}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterExplore(btn, cat) {
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderExplore(cat);
+}
+
+// ===== TIPS =====
+function renderTips() {
+  const container = document.getElementById('tipsList');
+  container.innerHTML = TIPS_DATA.map(t => `
+    <div class="tip-card-big" onclick="showTip('${t.id}')">
+      <div class="tip-card-header">
+        <div class="tip-card-icon" style="background:${t.color}">${t.icon}</div>
+        <div class="tip-card-title">${t.title}</div>
+      </div>
+      <div class="tip-card-body">${t.body.substring(0, 80)}...</div>
+    </div>
+  `).join('');
+}
+
+// ===== APPS =====
+function renderApps() {
+  const container = document.getElementById('appsList');
+  container.innerHTML = APPS_DATA.map(a => `
+    <div class="fav-item" style="cursor:default">
+      <div class="fav-emoji">${a.emoji}</div>
+      <div class="fav-info">
+        <div class="fav-name">${a.name}</div>
+        <div class="fav-detail">${a.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ===== TABS =====
+function switchTab(tab, navItem) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  navItem.classList.add('active');
+  document.getElementById('scrollArea').scrollTop = 0;
+}
+
+// ===== API KEY =====
+function saveApiKey() {
+  const key = document.getElementById('apiKeyInput').value.trim();
+  if (!key) { showToast('Please enter your Client ID'); return; }
+  state.clientId = key;
+  localStorage.setItem('ktm_clientId', key);
+  showToast('✅ API Key saved! Loading map...');
+  if (state.lat) loadNaverMap();
+  else { getLocation(); }
+}
+
+// ===== STATS =====
+function updateStats() {
+  document.getElementById('statSaved').textContent = state.favorites.length;
+  document.getElementById('statSearches').textContent = state.searches;
+  document.getElementById('statTips').textContent = state.tipsRead;
+}
+
+// ===== KORI MASCOT =====
+let koriTipIndex = 0;
+function koriTalk() {
+  const bubble = document.getElementById('koriBubble');
+  bubble.textContent = KORI_TIPS[koriTipIndex % KORI_TIPS.length];
+  bubble.classList.add('show');
+  koriTipIndex++;
+  setTimeout(() => bubble.classList.remove('show'), 3000);
+}
+
+function koriAutoTip() {
+  koriTalk();
+  setInterval(koriTalk, 12000);
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== INIT: SEARCH SUGGESTIONS =====
+const suggestions = ['Gyeongbokgung Palace', 'Myeongdong', 'Hongdae', 'N Seoul Tower', 'Bukchon Hanok Village', 'Insadong', 'Gangnam', 'DDP', 'Namsan Park', 'Itaewon'];
+
+document.getElementById('destInput').addEventListener('input', function() {
+  const val = this.value.toLowerCase();
+  const box = document.getElementById('searchSuggestions');
+  if (!val) { box.style.display = 'none'; return; }
+
+  const matches = suggestions.filter(s => s.toLowerCase().includes(val));
+  if (matches.length === 0) { box.style.display = 'none'; return; }
+
+  box.style.display = 'block';
+  box.innerHTML = matches.slice(0, 4).map(m => `
+    <div onclick="selectSuggestion('${m}')" style="padding:9px 14px;cursor:pointer;background:var(--gray);border-radius:10px;margin-bottom:4px;font-weight:700;font-size:0.85rem;transition:background 0.15s;" onmouseover="this.style.background='var(--coral-light)'" onmouseout="this.style.background='var(--gray)'">
+      📍 ${m}
+    </div>
+  `).join('');
+});
+
+function selectSuggestion(name) {
+  document.getElementById('destInput').value = name;
+  document.getElementById('searchSuggestions').style.display = 'none';
+  searchDestination();
+}
+
+// ===== GESTURE: close modal on swipe =====
+let startY = 0;
+document.getElementById('modalSheet').addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
+document.getElementById('modalSheet').addEventListener('touchend', e => {
+  if (e.changedTouches[0].clientY - startY > 80) closeModal({target: document.getElementById('modal')});
+});
+</script>
+</body>
+</html>
